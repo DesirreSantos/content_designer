@@ -25,8 +25,10 @@ const SUGGESTIONS = [
     },
 ];
 
+// ── State ──
 let previousResponseId = null;
 let isLoading = false;
+let selectedFile = null;
 
 // ── DOM refs ──
 const landingView = document.getElementById("landing-view");
@@ -38,15 +40,53 @@ const chatSendBtn = document.getElementById("chat-send-btn");
 const messagesEl = document.getElementById("messages");
 const newChatBtn = document.getElementById("new-chat-btn");
 const suggestionsGrid = document.getElementById("suggestions-grid");
+const fileInput = document.getElementById("file-input");
 
-// ── Build suggestion cards ──
+// File chip elements
+const landingFileChip = document.getElementById("landing-file-chip");
+const landingChipName = document.getElementById("landing-chip-name");
+const landingChipRemove = document.getElementById("landing-chip-remove");
+const chatFileChip = document.getElementById("chat-file-chip");
+const chatChipName = document.getElementById("chat-chip-name");
+const chatChipRemove = document.getElementById("chat-chip-remove");
+
+// ── Build suggestion cards (visual only, not clickable) ──
 SUGGESTIONS.forEach(({ icon, text }) => {
     const card = document.createElement("div");
     card.className = "suggestion-card";
     card.innerHTML = `<div class="card-icon">${icon}</div><span>${text}</span>`;
-    card.addEventListener("click", () => submitMessage(text));
     suggestionsGrid.appendChild(card);
 });
+
+// ── File handling ──
+function updateFileChips() {
+    const name = selectedFile ? selectedFile.name : "";
+    const show = !!selectedFile;
+
+    landingChipName.textContent = name;
+    landingFileChip.classList.toggle("hidden", !show);
+
+    chatChipName.textContent = name;
+    chatFileChip.classList.toggle("hidden", !show);
+}
+
+function clearFile() {
+    selectedFile = null;
+    fileInput.value = "";
+    updateFileChips();
+}
+
+// Both attach buttons trigger the shared hidden file input
+document.getElementById("landing-attach-btn").addEventListener("click", () => fileInput.click());
+document.getElementById("chat-attach-btn").addEventListener("click", () => fileInput.click());
+
+fileInput.addEventListener("change", () => {
+    selectedFile = fileInput.files[0] || null;
+    updateFileChips();
+});
+
+landingChipRemove.addEventListener("click", clearFile);
+chatChipRemove.addEventListener("click", clearFile);
 
 // ── View switching ──
 function showChat() {
@@ -54,22 +94,19 @@ function showChat() {
     chatView.classList.remove("hidden");
 }
 
-function showLanding() {
-    chatView.classList.add("hidden");
-    landingView.classList.remove("hidden");
-}
-
 function resetChat() {
     previousResponseId = null;
     messagesEl.innerHTML = "";
     chatInput.value = "";
-    showLanding();
+    clearFile();
+    chatView.classList.add("hidden");
+    landingView.classList.remove("hidden");
 }
 
 newChatBtn.addEventListener("click", resetChat);
 
 // ── Message rendering ──
-function appendMessage(role, text) {
+function appendMessage(role, text, attachmentName) {
     const msg = document.createElement("div");
     msg.className = `message ${role}`;
 
@@ -77,11 +114,20 @@ function appendMessage(role, text) {
     roleLabel.className = "message-role";
     roleLabel.textContent = role === "user" ? "Você" : "Content Designer";
 
+    if (attachmentName) {
+        const att = document.createElement("div");
+        att.className = "message-attachment";
+        att.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> ${attachmentName}`;
+        msg.appendChild(roleLabel);
+        msg.appendChild(att);
+    } else {
+        msg.appendChild(roleLabel);
+    }
+
     const bubble = document.createElement("div");
     bubble.className = "message-bubble";
     if (text) bubble.textContent = text;
 
-    msg.appendChild(roleLabel);
     msg.appendChild(bubble);
     messagesEl.appendChild(msg);
     messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -92,22 +138,38 @@ function appendMessage(role, text) {
 // ── Send message ──
 async function submitMessage(text) {
     const message = text.trim();
-    if (!message || isLoading) return;
+    const file = selectedFile;
+
+    if (!message && !file) return;
+    if (isLoading) return;
 
     isLoading = true;
     setInputsDisabled(true);
 
     showChat();
-    appendMessage("user", message);
+
+    const displayText = message || `Analisar: ${file.name}`;
+    appendMessage("user", displayText, file ? file.name : null);
 
     const aiBubble = appendMessage("assistant", "");
     aiBubble.classList.add("loading");
 
+    // Build FormData (suporta arquivo + texto)
+    const formData = new FormData();
+    formData.append("message", message);
+    if (previousResponseId) {
+        formData.append("previous_response_id", previousResponseId);
+    }
+    if (file) {
+        formData.append("file", file);
+    }
+
+    clearFile();
+
     try {
         const res = await fetch("/api/chat", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message, previous_response_id: previousResponseId }),
+            body: formData,
         });
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -166,27 +228,31 @@ function setInputsDisabled(disabled) {
 
 // ── Event listeners ──
 landingSendBtn.addEventListener("click", () => {
-    submitMessage(landingInput.value);
+    const text = landingInput.value;
     landingInput.value = "";
+    submitMessage(text);
 });
 
 landingInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        submitMessage(landingInput.value);
+        const text = landingInput.value;
         landingInput.value = "";
+        submitMessage(text);
     }
 });
 
 chatSendBtn.addEventListener("click", () => {
-    submitMessage(chatInput.value);
+    const text = chatInput.value;
     chatInput.value = "";
+    submitMessage(text);
 });
 
 chatInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        submitMessage(chatInput.value);
+        const text = chatInput.value;
         chatInput.value = "";
+        submitMessage(text);
     }
 });

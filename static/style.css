@@ -147,6 +147,9 @@ body {
 .input-wrapper {
     width: 100%;
     max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .input-box {
@@ -155,8 +158,8 @@ body {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 10px 14px;
-    gap: 10px;
+    padding: 10px 10px 10px 8px;
+    gap: 8px;
     box-shadow: 0 1px 4px rgba(0,0,0,.06);
     transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -177,6 +180,28 @@ body {
 
 .input-box input::placeholder { color: var(--muted); }
 
+/* ── Attach Button ── */
+.attach-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.attach-btn:hover {
+    background: var(--bg);
+    color: var(--accent-from);
+}
+
+/* ── Send Button ── */
 .send-btn {
     width: 34px;
     height: 34px;
@@ -195,6 +220,45 @@ body {
 .send-btn:hover { opacity: 0.85; }
 .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* ── File Chip ── */
+.file-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #4338ca;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.file-chip.hidden { display: none; }
+
+.chip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 240px;
+}
+
+.chip-remove {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #6366f1;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 2px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.chip-remove:hover { color: #4338ca; }
+
 /* ── Suggestions Grid ── */
 .suggestions-grid {
     display: grid;
@@ -212,13 +276,7 @@ body {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.suggestion-card:hover {
-    border-color: #d1d5db;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    cursor: default;
 }
 
 .card-icon {
@@ -302,17 +360,30 @@ body {
     animation: blink .7s step-start infinite;
 }
 
+.message-attachment {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 @keyframes blink { 50% { opacity: 0; } }
 
 /* ── Chat Input ── */
 .chat-input-wrapper {
-    padding: 16px 24px 24px;
+    padding: 10px 24px 20px;
     background: var(--bg);
     border-top: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
+}
+
+.chat-input-wrapper .input-wrapper {
+    max-width: 760px;
 }
 
 .chat-input-wrapper .input-box {
