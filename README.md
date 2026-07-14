@@ -122,7 +122,8 @@ bashcurl -N -X POST http://localhost:8000/api/chat \
 
 O PROMPT_ID e PROMPT_VERSION estão fixos em main.py. Esse prompt deve existir previamente no dashboard da OpenAI. O modelo associado a ele é detectado automaticamente na inicialização da aplicação (variável MODEL), então não é necessário declará-lo manualmente no código.
 
-Segurança
+
+# Segurança
 
 
 Nunca faça commit do arquivo .env — ele já está listado no .gitignore.
