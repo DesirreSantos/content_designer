@@ -1,4 +1,5 @@
-Chat com OpenAI Responses API (FastAPI)
+
+# Chat com OpenAI Responses API (FastAPI)
 
 Backend em FastAPI que expõe um chat com streaming em tempo real (SSE), usando a OpenAI Responses API com um prompt pré-configurado no dashboard da OpenAI. O histórico de conversa é mantido através do encadeamento de previous_response_id, sem precisar reenviar todas as mensagens anteriores a cada chamada.
 Funcionalidades
@@ -11,7 +12,8 @@ Endpoint de diagnóstico (/api/test) para validar a conexão com a API
 Serve o frontend estático a partir da pasta static/
 
 
-Requisitos
+
+# Requisitos
 
 
 Python 3.10+
@@ -19,7 +21,8 @@ Uma chave de API válida da OpenAI
 Um prompt já criado no dashboard da OpenAI (prompt_id + version)
 
 
-Instalação
+
+# Instalação
 
 bash# Clone o repositório
 git clone <url-do-repositorio>
@@ -34,7 +37,8 @@ pip install fastapi uvicorn openai python-dotenv
 
 Dica: gere um requirements.txt com pip freeze > requirements.txt para fixar as versões usadas no seu ambiente.
 
-Configuração
+
+# Configuração
 
 
 Copie o arquivo de exemplo de variáveis de ambiente:
@@ -48,7 +52,8 @@ Edite o .env e adicione sua chave da OpenAI:
 
    OPENAI_API_KEY=sk-...
 
-Estrutura esperada do projeto
+
+# Estrutura esperada do projeto
 
 .
 ├── main.py
@@ -59,13 +64,15 @@ Estrutura esperada do projeto
 
 O código espera encontrar um diretório static/ com pelo menos um arquivo index.html, servido na rota raiz (/).
 
-Executando
+
+# Executando
 
 bashuvicorn main:app --reload
 
 A aplicação sobe por padrão em http://localhost:8000.
 
-Endpoints
+
+# Endpoints
 
 GET /
 
@@ -77,7 +84,8 @@ Endpoint de diagnóstico. Faz uma chamada simples ao prompt configurado e retorn
 
 bashcurl http://localhost:8000/api/test
 
-Resposta esperada:
+
+# Resposta esperada:
 
 json{
   "status": "ok",
@@ -98,7 +106,8 @@ json{
 
 CampoObrigatórioDescriçãomessageSimTexto da mensagem do usuárioprevious_response_idNãoID da resposta anterior, usado para manter o contexto da conversa
 
-Formato dos eventos (SSE):
+
+# Formato dos eventos (SSE):
 
 TipoDescriçãotextFragmento (delta) de texto da resposta, enviado incrementalmentedoneSinaliza o fim da resposta e retorna o response_id para reutilizar na próxima chamadaerrorRetornado em caso de falha durante o streaming
 
@@ -108,7 +117,8 @@ bashcurl -N -X POST http://localhost:8000/api/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "Olá!"}'
 
-Notas sobre o prompt
+
+# Notas sobre o prompt
 
 O PROMPT_ID e PROMPT_VERSION estão fixos em main.py. Esse prompt deve existir previamente no dashboard da OpenAI. O modelo associado a ele é detectado automaticamente na inicialização da aplicação (variável MODEL), então não é necessário declará-lo manualmente no código.
 
