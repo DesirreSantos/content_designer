@@ -19,11 +19,35 @@ app = FastAPI()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 PROMPT_ID = "pmpt_6a5667ebffb88197979acdbb0f25e9eb0288546da047e27f"
-PROMPT_VERSION = "1"
+PROMPT_VERSION = "3"
+
+TOOLS = [
+    {
+        "type": "file_search",
+        "vector_store_ids": ["vs_6a4ffcee41208191812577ca512cb7a0"],
+    },
+    {
+        "type": "web_search",
+        "return_token_budget": "default",
+        "search_context_size": "medium",
+        "user_location": {
+            "type": "approximate",
+            "city": None,
+            "country": "BR",
+            "region": None,
+            "timezone": None,
+        },
+    },
+]
 
 _probe = client.responses.create(
     prompt={"id": PROMPT_ID, "version": PROMPT_VERSION},
     input=".",
+    text={"format": {"type": "text"}},
+    reasoning={},
+    tools=TOOLS,
+    max_output_tokens=4220,
+    store=True,
 )
 MODEL = _probe.model
 logger.info("Modelo detectado: %s", MODEL)
@@ -77,6 +101,11 @@ async def test_connection():
         r = client.responses.create(
             prompt={"id": PROMPT_ID, "version": PROMPT_VERSION},
             input="Diga apenas: conexão OK",
+            text={"format": {"type": "text"}},
+            reasoning={},
+            tools=TOOLS,
+            max_output_tokens=4220,
+            store=True,
         )
         return {"status": "ok", "model": r.model, "response": r.output_text}
     except Exception as e:
@@ -106,6 +135,12 @@ async def chat(
             "model": MODEL,
             "prompt": {"id": PROMPT_ID, "version": PROMPT_VERSION},
             "input": input_data,
+            "text": {"format": {"type": "text"}},
+            "reasoning": {},
+            "tools": TOOLS,
+            "max_output_tokens": 4220,
+            "store": True,
+            "include": ["web_search_call.action.sources"],
         }
         if previous_response_id:
             kwargs["previous_response_id"] = previous_response_id
