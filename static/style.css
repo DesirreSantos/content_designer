@@ -1,0 +1,333 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --border: #e5e7eb;
+    --text: #111827;
+    --muted: #6b7280;
+    --accent-from: #6366f1;
+    --accent-to: #ec4899;
+    --sidebar-w: 220px;
+    --radius: 12px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 14px;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.logo-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.new-chat-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    width: 100%;
+}
+
+.new-chat-btn:hover { background: var(--bg); }
+
+/* ── Main ── */
+.main {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.view {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.2s;
+}
+
+.view.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ── Landing View ── */
+.landing-view {
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px 32px;
+    gap: 32px;
+    overflow-y: auto;
+}
+
+.greeting {
+    text-align: center;
+    max-width: 560px;
+}
+
+.greeting h1 {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.greeting h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.25;
+}
+
+.accent {
+    background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* ── Input Box ── */
+.input-wrapper {
+    width: 100%;
+    max-width: 640px;
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    gap: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input-box:focus-within {
+    border-color: var(--accent-from);
+    box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+
+.input-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.input-box input::placeholder { color: var(--muted); }
+
+.send-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    background: var(--text);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: opacity 0.15s;
+}
+
+.send-btn:hover { opacity: 0.85; }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Suggestions Grid ── */
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    max-width: 640px;
+    width: 100%;
+}
+
+.suggestion-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.suggestion-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.card-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--muted);
+}
+
+.suggestion-card span {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.45;
+}
+
+/* ── Chat View ── */
+.chat-view {
+    padding: 0;
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 100%;
+}
+
+.message.user { align-items: flex-end; }
+.message.assistant { align-items: flex-start; }
+
+.message-role {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--muted);
+}
+
+.message-bubble {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.65;
+    max-width: 88%;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.message.user .message-bubble {
+    background: var(--text);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.message.assistant .message-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+}
+
+.message.assistant .message-bubble.loading::after {
+    content: "▋";
+    animation: blink .7s step-start infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── Chat Input ── */
+.chat-input-wrapper {
+    padding: 16px 24px 24px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.chat-input-wrapper .input-box {
+    max-width: 760px;
+    width: 100%;
+}
+
+.input-hint {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .sidebar { display: none; }
+    .suggestions-grid { grid-template-columns: 1fr; }
+    .messages { padding: 20px 16px; }
+}
